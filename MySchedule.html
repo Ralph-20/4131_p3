@@ -45,7 +45,70 @@
                 bigpic.alt = "Life Time";
               }
           }    
+
+
+        //   stuff for map 
+
+        var map;
+        function initMap() {
+
+            // my 5 different locations 
+            const locCaribou = new google.maps.LatLng(44.9741, 93.2248);
+            const locHellsKitchen = new google.maps.LatLng(44.97481118193472, -93.27299963753042);
+            const locBlaze = new google.maps.LatLng(44.97362912105094, -93.22339138627919);
+            const locWahu = new google.maps.LatLng(44.97352671492419, -93.22312726940874);
+            const locFolwell = new google.maps.LatLng(44.97834560546209, -93.23394962752333);
+
+            let myArr = [];
+
+            myArr.push(locCaribou);
+            myArr.push(locHellsKitchen);
+            myArr.push(locBlaze);
+            myArr.push(locWahu);
+            myArr.push(locFolwell);
+
+            infowindow = new google.maps.InfoWindow();
+
+            var myLatLng = {lat: 44.977276, lng: -93.232266};
+            map = new google.maps.Map(document.getElementById('map'), {
+            center: myLatLng,
+            zoom: 14
+            });
+
+            service = new google.maps.places.PlacesService(map);
+
+
+            
+
+            for (var i = 0; i < myArr.length; i++) {
+                createMarker(i);
+            }
+
+        }
+
+        // stuff for create marker, having trouble with it 
+
+            // function createMarker(place) {
+            //     if (!place.geometry || !place.geometry.location) return;
+
+            //     const marker = new google.maps.Marker({
+            //         map,
+            //         position: place.geometry.location,
+            //     });
+
+            //     google.maps.event.addListener(marker, "click", () => {
+            //         infowindow.setContent(place.name || "");
+            //         infowindow.open(map);
+            //     });
+            // }
+
+            window.initMap = initMap;
+
       </script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap" async defer></script>
+      <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap"></script>
+      <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap"></script>
+
 
 </head>
 
@@ -163,5 +226,12 @@
             <img src="images/gophers-mascot.png" alt="" id="big" >
         </div>
     </div>
+
+            <!-- map -->
+
+        <div id="map"></div>
+ 
+      
+    
 </body>
 </html>
