@@ -47,6 +47,25 @@
           }    
 
 
+
+          // transition for images with button 
+
+
+
+        function changeImage(event){
+            var myimg = document.getElementById("big");
+            var btn = document.getElementById('logoButton');
+            myimg.classList.toggle('fade');
+            if (btn.innerText == "Hide"){
+                btn.innerText = "Show";
+            }
+            else{
+                btn.innerText = "Hide";
+            }
+        }
+
+
+
         //   stuff for map 
 
         var map;
@@ -284,6 +303,7 @@
         </table>
 
         <div id="big-images">
+            <button onclick="changeImage()" id="logoButton">Hide</button>
             <img src="images/gophers-mascot.png" alt="" id="big" >
         </div>
     </div>

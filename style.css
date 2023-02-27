@@ -195,3 +195,16 @@ html, body {
   
 }
 
+/*  for the transition button image on sched page */
+
+#big {
+  opacity: 1;
+  -webkit-transition: opacity 0.3s ease-in-out;
+  -moz-transition: opacity 0.3s ease-in-out;
+  -ms-transition: opacity 0.3s ease-in-out;
+  -o-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3 ease-in-out;
+}
+#big.fade {
+  opacity:0;
+}
