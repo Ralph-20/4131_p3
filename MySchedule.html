@@ -50,24 +50,47 @@
         //   stuff for map 
 
         var map;
+        var directionsService;
+        var directionsRenderer;
+        var currentLocation;
         function initMap() {
 
-            // my 5 different locations 
-            const locCaribou = new google.maps.LatLng(44.9741, 93.2248);
-            const locHellsKitchen = new google.maps.LatLng(44.97481118193472, -93.27299963753042);
-            const locBlaze = new google.maps.LatLng(44.97362912105094, -93.22339138627919);
-            const locWahu = new google.maps.LatLng(44.97352671492419, -93.22312726940874);
-            const locFolwell = new google.maps.LatLng(44.97834560546209, -93.23394962752333);
+            // creating points of interest
 
-            let myArr = [];
+        var pointsOfInterest = [
+            {
+                name: 'Caribou',
+                lat: 44.9741,
+                lng: 93.2248,
+                description: 'Coffee and breakfast with friends, Saturday, 10-11 AM, Caribou'
+            },
+            {
+                name: 'Hells Kitchen',
+                lat: 44.97481118193472,
+                lng: -93.27299963753042,
+                description: "Dinner with Dad, Saturday, 6-7 PM, Hell's Kitchen"
+            },
+            {
+                name: 'Blaze Pizza',
+                lat: 44.97362912105094,
+                lng: -93.22339138627919,
+                description: "Pizza with friends, Wednesday, 6-7:15 PM, Blaze Pizza"
+            },
+            {
+                name: 'Wahu',
+                lat: 44.97352671492419,
+                lng: -93.22312726940874,
+                description: "Party with friends, Friday, 8 PM - 12 AM, Wahu"
+            },
+            {
+                name: 'Folwell',
+                lat: 44.97834560546209,
+                lng: -93.23394962752333,
+                description: "Spanish class, Tuesday, 4-5:15 PM, Folwell Hall"
+            }
+        ];
 
-            myArr.push(locCaribou);
-            myArr.push(locHellsKitchen);
-            myArr.push(locBlaze);
-            myArr.push(locWahu);
-            myArr.push(locFolwell);
-
-            infowindow = new google.maps.InfoWindow();
+            // instantiating map
 
             var myLatLng = {lat: 44.977276, lng: -93.232266};
             map = new google.maps.Map(document.getElementById('map'), {
@@ -75,34 +98,72 @@
             zoom: 14
             });
 
-            service = new google.maps.places.PlacesService(map);
 
 
-            
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
 
-            for (var i = 0; i < myArr.length; i++) {
-                createMarker(i);
+
+            // infowindow = new google.maps.InfoWindow();
+            // service = new google.maps.places.PlacesService(map);
+
+
+            // Create the DirectionsService and DirectionsRenderer objects
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+                 // Loop through the array of points of interest and add markers to the map
+            for (var i = 0; i < pointsOfInterest.length; i++) {
+                var poi = pointsOfInterest[i];
+                var marker = new google.maps.Marker({
+                position: {lat: poi.lat, lng: poi.lng},
+                map: map,
+                title: poi.name
+                });
+
+                  // Create an info window for each marker
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: poi.description
+                });
+
+                  // Add a click event listener to each marker that opens the info window
+                marker.addListener('click', function() {
+                    infowindow.open(map, marker);
+                });
             }
 
         }
 
-        // stuff for create marker, having trouble with it 
 
-            // function createMarker(place) {
-            //     if (!place.geometry || !place.geometry.location) return;
 
-            //     const marker = new google.maps.Marker({
-            //         map,
-            //         position: place.geometry.location,
-            //     });
+        function calculateRoute() {
+            var selectedMode = document.getElementById('mode').value;
+            var destination = document.getElementById('destination').value;
 
-            //     google.maps.event.addListener(marker, "click", () => {
-            //         infowindow.setContent(place.name || "");
-            //         infowindow.open(map);
-            //     });
-            // }
+            // Get the user's current location using the geolocation API
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-            window.initMap = initMap;
+                // Calculate the route using the DirectionsService
+                var request = {
+                origin: currentLocation,
+                destination: destination,
+                travelMode: google.maps.TravelMode[selectedMode]
+                };
+                directionsService.route(request, function(result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    // Display the route on the map using the DirectionsRenderer
+                    directionsRenderer.setDirections(result);
+                }
+                });
+            });
+            }
+
+
 
       </script>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap" async defer></script>
@@ -154,7 +215,7 @@
                 <td>Tuesday</td>
                 <td>Spanish Class</td>
                 <td>4:00 PM - 5:15 PM</td>
-                <td>216 Pillsbury Dr SE, Minneapolis, MN 55455
+                <td>Folwell Hall, Pleasant St SE, Minneapolis, MN 55455
                     <img src="images/FolwellHall.jfif" alt="Spanish">
                 </td>
                 <td>612-984-1048</td>
@@ -204,7 +265,7 @@
                 <td>Saturday</td>
                 <td>Dinner with Dad at Hell's Kitchen</td>
                 <td>6:00 PM - 7:00 PM</td>
-                <td>917 Washington Ave SE, Minneapolis, MN 55414
+                <td>80 S 9th St, Minneapolis, MN 55402
                     <img src="images/HellsKitchen.jpg" alt="Hells Kitchen">
                 </td>
                 <td>(612) 332-4700</td>
@@ -230,8 +291,27 @@
             <!-- map -->
 
         <div id="map"></div>
- 
-      
+       
+        <label for="destination">Destination:</label>
+        <select id="destination">
+            <option value="">Select a destination</option>
+            <option value="917 Washington Ave SE, Minneapolis, MN 55414">Caribou</option>
+            <option value="80 S 9th St, Minneapolis, MN 55402">Hell's Kitchen</option>
+            <option value="1000 Washington Ave SE, Minneapolis, MN 55414">Blaze Pizza</option>
+            <option value="1016 Washington Ave SE, Minneapolis, MN 55414">Wahu</option>
+            <option value="Folwell Hall, Pleasant St SE, Minneapolis, MN 55455">Folwell</option>
+        </select>
+        <label for="mode">Mode of transportation:</label>
+        <select id="mode">
+            <option value="DRIVING">Driving</option>
+            <option value="WALKING">Walking</option>
+            <option value="TRANSIT">Public Transit</option>
+        </select>
+        <!-- <br> -->
+        
+        <button onclick="calculateRoute()">Go</button>
+        
+            
     
 </body>
 </html>
