@@ -76,11 +76,6 @@
 
         function initMap() {
 
-            // creating points of interest
-
-            // Select all rows of the Schedule table
-            const rows = document.querySelectorAll('#schedule-table tbody tr');
-
             // instantiating map
 
             var myLatLng = {lat: 44.977276, lng: -93.232266};
@@ -94,45 +89,35 @@
             const markers = {};
 
 
-
-            // Loop through each row and extract the event information
-            rows.forEach(row => {
-                const name = row.querySelector('.event-name').innerText;
-                const time = row.querySelector('.event-time').innerText;
-                const location = row.querySelector('.event-location').innerText;
-
-                // Use the Places API to geocode the location and obtain the latitude and longitude
-                const service = new google.maps.places.PlacesService(map);
-                service.textSearch({ query: location }, (results, status) => {
-                    if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    const place = results[0];
-                    const latLng = place.geometry.location;
-
-                    // Create a custom marker for each unique latitude/longitude pair
-                    const markerKey = `${latLng.lat()},${latLng.lng()}`;
-                    if (!markers[markerKey]) {
-                        const marker = new google.maps.Marker({
-                        position: latLng,
-                        map: map,
-                        title: name + ' - ' + time
-                        });
-
-                        // Add a click listener to display the complete address of the event
-                        const infowindow = new google.maps.InfoWindow({
-                        content: place.formatted_address
-                        });
-                        marker.addListener('click', () => {
-                        infowindow.open(map, marker);
-                        });
-
-                        // Store the marker in the markers object for later use
-                        markers[markerKey] = marker;
-                    }
-                    }
-                });
-                });
-
             var geocoder = new google.maps.Geocoder(); // Create a geocoder object
+
+            var table = document.getElementById('schedule-table');
+
+            for(var i = 1; i < 7; i++){
+
+                var cells = table.rows.item(i).cells;
+
+                const day = cells.item(0).innerHTML;
+                const name = cells.item(1).innerHTML;
+                const time = cells.item(2).innerHTML;
+                const address = cells.item(3).innerText;
+
+
+                // getting address using geocode
+
+                geocoder.geocode({ 'address': address }, function(results, status) {
+                    if (status == 'OK') {
+                        var location = results[0].geometry.location;
+                        var latitude = location.lat();
+                        var longitude = location.lng();
+                        createMarker(day, name, time, address, map, latitude, longitude);
+                    } else {
+                        console.log('Geocode was not successful for the following reason: ' + status);
+                    }
+                    });
+
+            }
+
 
             // Create the DirectionsService and DirectionsRenderer objects
 
@@ -143,12 +128,44 @@
         }
 
 
+        function createMarker(day, eventName, time, address, map, latitude, longitude) {
+
+            var icon = {
+                url: "./images/Goldy.png"
+                };
+            icon.scaledSize = new google.maps.Size(35, 35);
+
+            var marker = new google.maps.Marker({
+                    position: {lat: latitude, lng: longitude},
+                    map: map,
+                    title: eventName,
+                    icon: icon
+                    });
+
+
+            // creating an info window for the marker
+
+            var myContent = eventName + "<br>" + day + " " + time + "<br>" + address;
+
+            var myInfowindow = new google.maps.InfoWindow({
+                    content: myContent
+                    });
+
+                    marker.addListener('click', function() {
+                        myInfowindow.open(map, marker);
+                    });
+        }
+
+
 
         function calculateRoute() {
             var selectedMode = document.getElementById('mode').value;
             var destination = document.getElementById('destination').value;
 
             // Get the user's current location using the geolocation API
+
+
+            
             navigator.geolocation.getCurrentPosition(function(position) {
                 var currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -167,11 +184,8 @@
             });
             }
 
-
-
       </script>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap" async defer></script>
-
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABgyWvYgmjDSfkJGSO7qXQOZo1XnBLezs&libraries=places&callback=initMap" async defer></script>
 
 
 </head>
@@ -297,14 +311,15 @@
         <div id="map"></div>
        
         <label for="destination">Destination:</label>
-        <select id="destination">
+        <input name="destination" type="text" id="destination" >   
+        <!-- <select id="destination">
             <option value="">Select a destination</option>
             <option value="917 Washington Ave SE, Minneapolis, MN 55414">Caribou</option>
             <option value="80 S 9th St, Minneapolis, MN 55402">Hell's Kitchen</option>
             <option value="1000 Washington Ave SE, Minneapolis, MN 55414">Blaze Pizza</option>
             <option value="1016 Washington Ave SE, Minneapolis, MN 55414">Wahu</option>
             <option value="Folwell Hall, Pleasant St SE, Minneapolis, MN 55455">Folwell</option>
-        </select>
+        </select> -->
         <label for="mode">Mode of transportation:</label>
         <select id="mode">
             <option value="DRIVING">Driving</option>

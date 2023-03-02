@@ -72,51 +72,11 @@
         var directionsService;
         var directionsRenderer;
         var currentLocation;
+
+
         function initMap() {
 
-            // creating points of interest
-
-        // var pointsOfInterest = [
-        //     {
-        //         name: 'Caribou',
-        //         lat: 44.9741,
-        //         lng: 93.2248,
-        //         description: 'Coffee and breakfast with friends, Saturday, 10-11 AM, Caribou'
-        //     },
-        //     {
-        //         name: 'Hells Kitchen',
-        //         lat: 44.97481118193472,
-        //         lng: -93.27299963753042,
-        //         description: "Dinner with Dad, Saturday, 6-7 PM, Hell's Kitchen"
-        //     },
-        //     {
-        //         name: 'Blaze Pizza',
-        //         lat: 44.97362912105094,
-        //         lng: -93.22339138627919,
-        //         description: "Pizza with friends, Wednesday, 6-7:15 PM, Blaze Pizza"
-        //     },
-        //     {
-        //         name: 'Wahu',
-        //         lat: 44.97352671492419,
-        //         lng: -93.22312726940874,
-        //         description: "Party with friends, Friday, 8 PM - 12 AM, Wahu"
-        //     },
-        //     {
-        //         name: 'Folwell',
-        //         lat: 44.97834560546209,
-        //         lng: -93.23394962752333,
-        //         description: "Spanish class, Tuesday, 4-5:15 PM, Folwell Hall"
-        //     }
-        // ];
-
             // instantiating map
-
-            var pointsOfInterest = [];
-            var info = []
-
-            for(i = 0; i < 6; i++){
-
-            }
 
             var myLatLng = {lat: 44.977276, lng: -93.232266};
             map = new google.maps.Map(document.getElementById('map'), {
@@ -124,15 +84,39 @@
             zoom: 14
             });
 
+
+            // Create an object to store the markers by latitude/longitude
+            const markers = {};
+
+
             var geocoder = new google.maps.Geocoder(); // Create a geocoder object
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
+            var table = document.getElementById('schedule-table');
+
+            for(var i = 1; i < 7; i++){
+
+                var cells = table.rows.item(i).cells;
+
+                const day = cells.item(0).innerHTML;
+                const name = cells.item(1).innerHTML;
+                const time = cells.item(2).innerHTML;
+                const address = cells.item(3).innerText;
 
 
-            // infowindow = new google.maps.InfoWindow();
-            // service = new google.maps.places.PlacesService(map);
+                // getting address using geocode
+
+                geocoder.geocode({ 'address': address }, function(results, status) {
+                    if (status == 'OK') {
+                        var location = results[0].geometry.location;
+                        var latitude = location.lat();
+                        var longitude = location.lng();
+                        createMarker(day, name, time, address, map, latitude, longitude);
+                    } else {
+                        console.log('Geocode was not successful for the following reason: ' + status);
+                    }
+                    });
+
+            }
 
 
             // Create the DirectionsService and DirectionsRenderer objects
@@ -141,28 +125,35 @@
             directionsRenderer = new google.maps.DirectionsRenderer();
             directionsRenderer.setMap(map);
 
-                 // Loop through the array of points of interest and add markers to the map
+        }
 
-            for (var i = 0; i < pointsOfInterest.length; i++) {
-                var poi = pointsOfInterest[i];
-                var marker = new google.maps.Marker({
-                position: {lat: poi.lat, lng: poi.lng},
-                map: map,
-                title: poi.name
-                });
 
-                  // Create an info window for each marker
+        function createMarker(day, eventName, time, address, map, latitude, longitude) {
 
-                var infowindow = new google.maps.InfoWindow({
-                    content: poi.description
-                });
+            var icon = {
+                url: "./images/Goldy.png"
+                };
+            icon.scaledSize = new google.maps.Size(35, 35);
 
-                  // Add a click event listener to each marker that opens the info window
-                marker.addListener('click', function() {
-                    infowindow.open(map, marker);
-                });
-            }
+            var marker = new google.maps.Marker({
+                    position: {lat: latitude, lng: longitude},
+                    map: map,
+                    title: eventName,
+                    icon: icon
+                    });
 
+
+            // creating an info window for the marker
+
+            var myContent = eventName + "<br>" + day + " " + time + "<br>" + address;
+
+            var myInfowindow = new google.maps.InfoWindow({
+                    content: myContent
+                    });
+
+                    marker.addListener('click', function() {
+                        myInfowindow.open(map, marker);
+                    });
         }
 
 
@@ -172,6 +163,9 @@
             var destination = document.getElementById('destination').value;
 
             // Get the user's current location using the geolocation API
+
+
+            
             navigator.geolocation.getCurrentPosition(function(position) {
                 var currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -190,12 +184,8 @@
             });
             }
 
-
-
       </script>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap" async defer></script>
-      <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap"></script>
-      <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABgyWvYgmjDSfkJGSO7qXQOZo1XnBLezs&libraries=places&callback=initMap" async defer></script>
 
 
 </head>
@@ -219,7 +209,7 @@
     </div>
 
     <div class="wrapper">
-        <table>
+        <table id="schedule-table">
             <tr>
                 <th>Day</th>
                 <th>Event</th>
@@ -230,9 +220,9 @@
             </tr>
             <tr onmouseover="showBigPic(1)">
                 <td>Monday</td>
-                <td>Watch Football with roommate</td>
-                <td>7:00 PM - 9:00 PM</td>
-                <td class="location">1016 Washington Ave SE, Minneapolis, MN 55414
+                <td class="event-name">Watch Football with roommate</td>
+                <td class="event-time">7:00 PM - 9:00 PM</td>
+                <td class="event-location">1016 Washington Ave SE, Minneapolis, MN 55414
                     <img src="images/MondayNightfb.jpg" alt="Monday Night football">
                 </td>
                 <td>612-984-1048</td>
@@ -240,9 +230,9 @@
             </tr>
             <tr onmouseover="showBigPic(2)">
                 <td>Tuesday</td>
-                <td>Spanish Class</td>
-                <td>4:00 PM - 5:15 PM</td>
-                <td class="location">Folwell Hall, Pleasant St SE, Minneapolis, MN 55455
+                <td class="event-name">Spanish Class</td>
+                <td class="event-time">4:00 PM - 5:15 PM</td>
+                <td class="event-location">Folwell Hall, Pleasant St SE, Minneapolis, MN 55455
                     <img src="images/FolwellHall.jfif" alt="Spanish">
                 </td>
                 <td>612-984-1048</td>
@@ -250,9 +240,9 @@
             </tr>
             <tr onmouseover="showBigPic(3)">
                 <td>Wednesday</td>
-                <td>Dinner with friend at pizza place</td>
-                <td>6:00 PM - 7:15 PM</td>
-                <td class="location">1000 Washington Ave SE, Minneapolis, MN 55414
+                <td class="event-name">Dinner with friend at pizza place</td>
+                <td class="event-time">6:00 PM - 7:15 PM</td>
+                <td class="event-location">1000 Washington Ave SE, Minneapolis, MN 55414
                     <img src="images/BlazePizza.jpg" alt="Blaze Pizza">
                 </td>
                 <td>(612) 295-0835</td>
@@ -260,9 +250,9 @@
             </tr>
             <tr onmouseover="showBigPic(4)">
                 <td>Thursday</td>
-                <td>Workout at the Rec</td>
-                <td>6:00 PM - 7:30 PM</td>
-                <td class="location">123 SE Harvard St, Minneapolis, MN 55455
+                <td class="event-name">Workout at the Rec</td>
+                <td class="event-time">6:00 PM - 7:30 PM</td>
+                <td class="event-location">123 SE Harvard St, Minneapolis, MN 55455
                     <img src="images/RecWell.jpg" alt="RecWell">
                 </td>
                 <td>(612) 626-9222</td>
@@ -270,9 +260,9 @@
             </tr>
             <tr onmouseover="showBigPic(5)">
                 <td>Friday</td>
-                <td>Party with friends at my Apartment</td>
-                <td>8:00 PM - 12:00 AM</td>
-                <td class="location">1016 Washington Ave SE, Minneapolis, MN 55414
+                <td class="event-name">Party with friends at my Apartment</td>
+                <td class="event-time">8:00 PM - 12:00 AM</td>
+                <td class="event-location">1016 Washington Ave SE, Minneapolis, MN 55414
                     <img src="images/Wahu.jpg" alt="Wahu">
                 </td>
                 <td>(952) 208-9101</td>
@@ -280,9 +270,9 @@
             </tr>
             <tr onmouseover="showBigPic(6)">
                 <td>Saturday</td>
-                <td>Coffee and Breakfast with friends at Caribou</td>
-                <td>10:00 AM - 11:00 AM</td>
-                <td class="location">917 Washington Ave SE, Minneapolis, MN 55414
+                <td class="event-name">Coffee and Breakfast with friends at Caribou</td>
+                <td class="event-time">10:00 AM - 11:00 AM</td>
+                <td class="event-location">917 Washington Ave SE, Minneapolis, MN 55414
                     <img src="images/Caribou.jpg" alt="Caribou Coffee">
                 </td>
                 <td>(612) 331-4121</td>
@@ -290,9 +280,9 @@
             </tr>
             <tr onmouseover="showBigPic(7)">
                 <td>Saturday</td>
-                <td>Dinner with Dad at Hell's Kitchen</td>
-                <td>6:00 PM - 7:00 PM</td>
-                <td class="location">80 S 9th St, Minneapolis, MN 55402
+                <td class="event-name">Dinner with Dad at Hell's Kitchen</td>
+                <td class="event-time">6:00 PM - 7:00 PM</td>
+                <td class="event-location">80 S 9th St, Minneapolis, MN 55402
                     <img src="images/HellsKitchen.jpg" alt="Hells Kitchen">
                 </td>
                 <td>(612) 332-4700</td>
@@ -300,9 +290,9 @@
             </tr>
             <tr onmouseover="showBigPic(8)">
                 <td>Sunday</td>
-                <td>Workout and dinner with Mom at Life Time</td>
-                <td>5:30 PM - 8:30 PM</td>
-                <td class="location">3600 Plymouth Blvd, Plymouth, MN 55446
+                <td class="event-name">Workout and dinner with Mom at Life Time</td>
+                <td class="event-time">5:30 PM - 8:30 PM</td>
+                <td class="event-location">3600 Plymouth Blvd, Plymouth, MN 55446
                     <img src="images/LifetimeFitness.jpg" alt="Life Time">
                 </td>
                 <td>763-509-0909</td>
@@ -321,14 +311,15 @@
         <div id="map"></div>
        
         <label for="destination">Destination:</label>
-        <select id="destination">
+        <input name="destination" type="text" id="destination" >   
+        <!-- <select id="destination">
             <option value="">Select a destination</option>
             <option value="917 Washington Ave SE, Minneapolis, MN 55414">Caribou</option>
             <option value="80 S 9th St, Minneapolis, MN 55402">Hell's Kitchen</option>
             <option value="1000 Washington Ave SE, Minneapolis, MN 55414">Blaze Pizza</option>
             <option value="1016 Washington Ave SE, Minneapolis, MN 55414">Wahu</option>
             <option value="Folwell Hall, Pleasant St SE, Minneapolis, MN 55455">Folwell</option>
-        </select>
+        </select> -->
         <label for="mode">Mode of transportation:</label>
         <select id="mode">
             <option value="DRIVING">Driving</option>
