@@ -69,11 +69,10 @@
         //   stuff for map 
 
         var map;
-        var userLocation;
         var directionsService;
         var directionsRenderer;
         var currentLocation;
-
+        var userLocation;
 
         function initMap() {
 
@@ -120,15 +119,8 @@
             }
 
 
-            // Create the DirectionsService and DirectionsRenderer objects
+            // getting users location
 
-            // directionsService = new google.maps.DirectionsService();
-            // directionsRenderer = new google.maps.DirectionsRenderer();
-            // directionsRenderer.setMap(map);
-
-            // getting users location 
-
-            
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                 userLocation = {
@@ -138,8 +130,6 @@
                 });
             } 
 
-
-            // end of function
 
         }
 
@@ -175,29 +165,27 @@
 
 
         function calculateRoute() {
+
+            // var geocoder = new google.maps.Geocoder();
+
+  
+            console.log(userLocation);
+
+
             var mode = document.querySelector('input[name="mode"]:checked').value;
             var destination = document.getElementById('destination').value;
 
             // calculating address 
 
-            var geocoder = new google.maps.Geocoder();
-            var actualAddress = geocoder.geocode({
-                address: destination
-            }, function(results, status) {
-                if (status === 'OK') {
-                console.log(results[0].formatted_address);
-                } else {
-                console.error('Geocode was not successful for the following reason: ' + status);
-                }
-            });
-
+  
+             var actualAddress;
 
             var directionsService = new google.maps.DirectionsService();
             var directionsRenderer = new google.maps.DirectionsRenderer({map: map});
 
             directionsService.route({
                 origin: userLocation,
-                destination: actualAddress,
+                destination: destination,
                 travelMode: mode
             }, function(response, status) {
                 if (status === 'OK') {
@@ -207,6 +195,26 @@
                 }
             });
             
+        }
+
+
+        function getLocation(destination) {
+
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode(destination, function(err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(data.results[0].formatted_address);
+                // Save the latitude and longitude of the location for later use
+                const lat = data.results[0].geometry.location.lat;
+                const lng = data.results[0].geometry.location.lng;
+                const actualAddress = new google.maps.LatLng(lat, lng);
+                return actualAddress;
+                
+            }
+            });
         }
 
       </script>
@@ -333,27 +341,22 @@
 
             <!-- map -->
 
-        <div id="map"></div>
-       
-        <label for="destination">Destination:</label>
-        <input name="destination" type="text" id="destination" >   
-        <!-- <select id="destination">
-            <option value="">Select a destination</option>
-            <option value="917 Washington Ave SE, Minneapolis, MN 55414">Caribou</option>
-            <option value="80 S 9th St, Minneapolis, MN 55402">Hell's Kitchen</option>
-            <option value="1000 Washington Ave SE, Minneapolis, MN 55414">Blaze Pizza</option>
-            <option value="1016 Washington Ave SE, Minneapolis, MN 55414">Wahu</option>
-            <option value="Folwell Hall, Pleasant St SE, Minneapolis, MN 55455">Folwell</option>
-        </select> -->
-        <label for="mode">Mode of transportation:</label>
-        <label for="driving"> Driving</label><input type="radio" name="mode" value="DRIVING" id="driving" checked> 
-        <label> Walking</label>
-        <input type="radio" name="mode" value="WALKING"> 
-        <label> Public transport</label>
-        <input type="radio" name="mode" value="TRANSIT"> 
-        <button type="button" onclick="calculateRoute()">Go</button>
 
-        
+
+        <div id="map"></div>
+
+       <div class="">
+            <label for="destination">Destination:</label>
+            <input name="destination" type="text" id="destination" >   
+            <label for="mode">Mode of transportation:</label>
+            <label for="driving"> Driving</label><input type="radio" name="mode" value='DRIVING' id="driving" checked> 
+            <label> Walking</label>
+            <input type="radio" name="mode" value='WALKING'> 
+            <label> Public transport</label>
+            <input type="radio" name="mode" value='TRANSIT'> 
+            <button type="button" onclick="calculateRoute()">Go</button>
+
+        </div>
             
     
 </body>
