@@ -197,26 +197,6 @@
             
         }
 
-
-        function getLocation(destination) {
-
-            var geocoder = new google.maps.Geocoder();
-
-            geocoder.geocode(destination, function(err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(data.results[0].formatted_address);
-                // Save the latitude and longitude of the location for later use
-                const lat = data.results[0].geometry.location.lat;
-                const lng = data.results[0].geometry.location.lng;
-                const actualAddress = new google.maps.LatLng(lat, lng);
-                return actualAddress;
-                
-            }
-            });
-        }
-
       </script>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&libraries=places&callback=initMap" async defer></script>
 
@@ -340,15 +320,13 @@
     </div>
 
             <!-- map -->
-
-
-
+<div id="map-wrapper">
         <div id="map"></div>
-
-       <div class="">
+  
+       <div class="sidePanel">
             <label for="destination">Destination:</label>
             <input name="destination" type="text" id="destination" >   
-            <label for="mode">Mode of transportation:</label>
+            <label for="mode">Mode of transportation:</label><br>
             <label for="driving"> Driving</label><input type="radio" name="mode" value='DRIVING' id="driving" checked> 
             <label> Walking</label>
             <input type="radio" name="mode" value='WALKING'> 
@@ -356,8 +334,9 @@
             <input type="radio" name="mode" value='TRANSIT'> 
             <button type="button" onclick="calculateRoute()">Go</button>
 
-        </div>
-            
+       </div>
+
+    </div>        
     
 </body>
 </html>
