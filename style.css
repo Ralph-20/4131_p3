@@ -166,10 +166,8 @@ label{
 
 form{
   padding: 20px;
-  max-width: 40%;
-  width: 400px;
+  width: 100%;
   box-sizing: border-box;
-  /* margin: 50px auto; */
   background-color: white;
 }
 
@@ -191,16 +189,7 @@ html, body {
   margin: 0;
   padding: 0;
 }
-/* #map {
-  /* height: 50%;
-  width: 50%;
-  margin: 10%;
-  padding: 0; */
-  /* position: absolute;
-  top: 75%; 
-  right: 50%;
-  width:50%;
-  height:35%; */
+
 
 
 /*  for the transition button image on sched page */
@@ -230,6 +219,12 @@ html, body {
   height: 50%;
   float: left;
 }
+.map-2 {
+  /* margin-left: 10; */
+  width: 40%;
+  height: 50%;
+  float: right;
+}
 
 
 .sidePanel {
@@ -240,3 +235,9 @@ html, body {
   background-color: gray;
 }
 
+
+.secondSidePanel {
+  width: 30%; 
+  float: left;
+  overflow: auto;
+}

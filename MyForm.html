@@ -114,7 +114,7 @@ body {
                     me.infowindow.open(me.map);
 
                     // setting the location here 
-                    
+
                     var input = document.getElementById('location');
                     input.value = place.formatted_address; 
 
@@ -126,7 +126,7 @@ body {
         window.initMap = initMap;
     </script>
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABgyWvYgmjDSfkJGSO7qXQOZo1XnBLezs&callback=initMap&libraries=places&v=weekly"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKV_ZWS2vXsELohIbIxE_Liqf0msc0W2U&callback=initMap&libraries=places&v=weekly"
     defer
   ></script>
 
@@ -144,7 +144,7 @@ body {
         </nav>
     </header>
     
-    <div class="wrapper">
+    <div class="secondSidePanel">
         <form method="post" action = "https://www-users.cselabs.umn.edu/~cuixx327/a2.php">
             
             <!-- hidden inputs below - no visual inputs that will -->
@@ -216,17 +216,17 @@ body {
         
         </form>
 
-
+     
 
     </div>
 
-
-
     <div id="map"></div>
+
+ 
     <div id="infowindow-content">
       <img id="place-icon" src="" height="16" width="16" />
       <span id="place-name" class="title"></span><br />
-      Place ID <span id="place-id"></span><br />
+       <span id="place-id"></span><br />
       <span id="place-address"></span>
     </div>
 
